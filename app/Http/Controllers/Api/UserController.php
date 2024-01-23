@@ -540,10 +540,15 @@ class UserController extends Controller
         'height_i', 'marital_status', 'profileBy', 'fileToUpload',
         'education', 'education_details', 'occupation', 'occupation_details',
         'hobbies', 'fatherName', 'father_Occupation', 'MotherName',
-        'state', 'location', 'city')
+        'state', 'location', 'city', \DB::raw("CONCAT('".url('/storage/app/public/profile_picture/350')."/', fileToUpload) AS image_url"))
         ->where('is_verified', 1)
         ->where('is_admin_verified', 1)
         ->get();
+        $dataListing->transform(function ($dataListing) {
+            // Assuming 'dob' is the column containing the date of birth
+            $dataListing->age = Carbon::parse($dataListing->dob)->age;
+            return $dataListing;
+        });
         return response()->json(['status'=>1,'message'=>trans('messages.success'),'data'=>$dataListing],200);
     }
 
@@ -557,12 +562,18 @@ class UserController extends Controller
         'gotra', 'gender', 'dob', 'birthTime', 'manglik', 'height_f',
         'height_i', 'marital_status', 'profileBy', 'fileToUpload',
         'education', 'education_details', 'occupation', 'occupation_details',
-        'hobbies', 'fatherName', 'father_Occupation', 'MotherName',
-        'state', 'location', 'city')
+        'hobbies', 'fatherName', 'father_Occupation', 'MotherName', // \DB::raw("CONCAT('".Carbon::parse('dob')->age."/', dob) AS image_url"),
+        'state', 'location', 'city', \DB::raw("CONCAT('".url('/storage/app/public/profile_picture/350')."/', fileToUpload) AS image_url"))
         ->where('is_verified', 1)
         ->where('is_admin_verified', 1)
         ->where('gender', 'F')
         ->get();
+
+        $dataListing->transform(function ($dataListing) {
+            // Assuming 'dob' is the column containing the date of birth
+            $dataListing->age = Carbon::parse($dataListing->dob)->age;
+            return $dataListing;
+        });
         return response()->json(['status'=>1,'message'=>trans('messages.success'),'data'=>$dataListing],200);
     }
 
@@ -577,11 +588,16 @@ class UserController extends Controller
         'height_i', 'marital_status', 'profileBy', 'fileToUpload',
         'education', 'education_details', 'occupation', 'occupation_details',
         'hobbies', 'fatherName', 'father_Occupation', 'MotherName',
-        'state', 'location', 'city')
+        'state', 'location', 'city', \DB::raw("CONCAT('".url('/storage/app/public/profile_picture/350')."/', fileToUpload) AS image_url"))
         ->where('is_verified', 1)
         ->where('is_admin_verified', 1)
         ->where('gender', 'M')
         ->get();
+        $dataListing->transform(function ($dataListing) {
+            // Assuming 'dob' is the column containing the date of birth
+            $dataListing->age = Carbon::parse($dataListing->dob)->age;
+            return $dataListing;
+        });
         return response()->json(['status'=>1,'message'=>trans('messages.success'),'data'=>$dataListing],200);
     }
 
@@ -631,7 +647,7 @@ class UserController extends Controller
                 'payment' => $checkuser->payment,
                 'txn_id' => $checkuser->txn_id ? $checkuser->txn_id : null,
                 'payment_date' => $checkuser->payment_date ? $checkuser->payment_date : null,
-                'age' => Carbon::parse($checkuser->age)->age,
+                'age' => Carbon::parse($checkuser->dob)->age,
                 'dateOfBirth' => Carbon::parse($checkuser->dateOfBirth)->format('d-M-Y'),
                 'profile_image' => Helper::user_profile_img_path($checkuser->fileToUpload),
                 'image_thumbImagePath' => Helper::user_profile_img_path($checkuser->fileToUpload)
